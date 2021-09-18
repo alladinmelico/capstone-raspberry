@@ -1,28 +1,47 @@
 import requests
 import RPi.GPIO as GPIO
+from gpiozero.pins.pigpio import PiGPIOFactory
 from mfrc522 import SimpleMFRC522
+from gpiozero import LED, Buzzer
+from time import sleep
+
 GPIO.setwarnings(False)
+pigpio_factory = PiGPIOFactory()
 
 reader = SimpleMFRC522()
 raspId = 'm2ShOB1OdMtwIhdPzciH12Oqf5sEVA7C'
+rfidUrl = 'http://192.168.0.14/api/rfid'
+greenLED = LED(24, pin_factory=pigpio_factory, initial_value=True)
+buzz = Buzzer(23, pin_factory=pigpio_factory)
 
-try:
+while True:
     id, text = reader.read()
-    print(id)
-    print(text)
-finally:
-    GPIO.cleanup()
-
-#try:
-#    text = input('New data:')
-#    print("Now place your tag to write")
-#    reader.write(text)
-#    print("Written")
-#finally:
-#    GPIO.cleanup()
+    greenLED.off()
+    getRfid = requests.get(rfidUrl + '/' + str(id) + '?id=' + raspId)
     
-url = 'http://192.168.0.14/api'
-r = requests.get(url + '/facility')
-print (r.status_code)
-print (r.headers)
-print (r.text[0:1000])
+    if (getRfid.status_code == 404):
+        urlString = rfidUrl + '?id=' + raspId + '&value=' + str(id)
+        print (urlString)
+        postRfid = requests.post(urlString)
+        if (postRfid.status_code == 201):
+            print ('RFID added')
+            buzz.beep(0.10,0.10,3, False)
+        else:
+            print (str(postRfid.status_code) + ' Cannot register the RFID, contact the administrator')
+            buzz.beep(0.10,0.10,2, False)
+    elif (getRfid.status_code == 419):
+        print ('You do not have a schedule for today')
+        buzz.beep(0.10,0.10,2, False)
+    elif (getRfid.status_code == 200):
+        print ('Logged in')
+        buzz.on()
+        sleep(0.5)
+    elif (getRfid.status_code == 204):
+        print ('Logged out')
+        buzz.on()
+        sleep(0.10)
+        
+    buzz.off()
+    sleep(1)    
+    greenLED.on()
+    GPIO.cleanup()
