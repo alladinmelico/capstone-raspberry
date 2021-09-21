@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: PyMLX90614
+Version: 0.0.3
+Summary: MLX90614 temperature sensor library
+Home-page: https://github.com/Conr86/PyMLX90614
+Author: Connor Kneebone
+Author-email: connor@sfxrescue.com
+License: MIT
+Description: # capstone-raspberry
+        
+Keywords: mlx90614 i2c smbus smbus2
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
