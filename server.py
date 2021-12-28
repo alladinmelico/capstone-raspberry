@@ -1,5 +1,6 @@
 import requests
 import RPi.GPIO as GPIO
+from flask import Flask, render_template
 from gpiozero.pins.pigpio import PiGPIOFactory
 from mfrc522 import SimpleMFRC522
 from gpiozero import LED, Buzzer
@@ -19,7 +20,7 @@ buzz = Buzzer(23, pin_factory=pigpio_factory)
 bus = SMBus(1)
 sensor = MLX90614(bus, address=0x5A)
 
-while True:
+def checkRfid():
     id, text = reader.read()
     greenLED.off()
     
@@ -63,5 +64,20 @@ while True:
     sleep(1)    
     greenLED.on()
     GPIO.cleanup()
+    bus.close()
 
-bus.close()
+app = Flask(__name__)
+
+@app.route('/')
+
+def index():
+ return render_template('index.html')
+
+@app.route('/check')
+def check():
+    checkRfid()
+    return 'Raspberry Pie!'
+
+if __name__ == '__main__':
+ app.run(debug=True, host='0.0.0.0')
+
