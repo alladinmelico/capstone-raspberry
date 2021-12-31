@@ -1,6 +1,8 @@
 import requests
 import RPi.GPIO as GPIO
 from flask import Flask, render_template
+from flask_socketio import SocketIO
+from flask_socketio import send, emit
 from gpiozero.pins.pigpio import PiGPIOFactory
 from mfrc522 import SimpleMFRC522
 from gpiozero import LED, Buzzer
@@ -52,6 +54,7 @@ def checkRfid():
             sleep(0.10)
         else:
             print ('Error, contact the administrator')
+        emit('new_data', 'from server', broadcast=True)
     except Exception:
         print ('Unable to connect')
     
@@ -66,7 +69,15 @@ def checkRfid():
     GPIO.cleanup()
     bus.close()
 
+socketio = SocketIO(logger=True)
+
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+
+socketio = SocketIO(app)
+
+def some_function():
+    emit('update value', 'foo', broadcast=True)
 
 @app.route('/')
 
@@ -76,8 +87,6 @@ def index():
 @app.route('/check')
 def check():
     checkRfid()
-    return 'Raspberry Pie!'
 
 if __name__ == '__main__':
- app.run(debug=True, host='0.0.0.0')
-
+    socketio.run(app)
