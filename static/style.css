@@ -1,0 +1,50 @@
+#profile {
+  border-radius: 1rem;
+}
+
+#success, #failed {
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: white;
+  font-size: 2rem;
+}
+
+#success {
+  background-color: #4bacb8;
+}
+
+#failed {
+  background-color: #b84b4b;
+}
+
+#info {
+  font-size: 2rem;
+}
+
+#info .col-8 {
+  font-weight: bold;
+  color: #00838f;
+  margin-bottom: 1rem;
+}
+
+.icon {
+  height: 2rem;
+  width: 2rem;
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
+.info {
+  display: flex;
+}
+
+.info strong {
+  color: red;
+}
+
+h5 {
+  font-weight: 700;
+  margin-top: 2rem;
+}
