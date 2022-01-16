@@ -1,10 +1,11 @@
 import evdev
 from evdev import categorize, ecodes
+import requests
 
 
 class Device():
     name = 'Sycreader RFID Technology Co., Ltd SYC ID&IC USB Reader'
-
+    url = 'http://localhost:5000'
     @classmethod
     def list(cls, show_all=False):
         # list the available devices
@@ -29,26 +30,25 @@ class Device():
     def run(cls):
         device = cls.connect()
         container = []
-        try:
-            device.grab()
-            # bind the device to the script
-            print("RFID scanner is ready....")
-            print("Press Control + c to quit.")
-            for event in device.read_loop():
-                    # enter into an endeless read-loop
-                    if event.type == ecodes.EV_KEY and event.value == 1:
-                        digit = evdev.ecodes.KEY[event.code]
-                        if digit == 'KEY_ENTER':
-                            # create and dump the tag
-                            tag = "".join(i.strip('KEY_') for i in container)
-                            print('tag', tag)
-                            container = []
-                        else:
-                            container.append(digit)
-
-        except:
-            # catch all exceptions to be able release the device
-            device.ungrab()
-            print('Quitting.')
+        device.grab()
+        # bind the device to the script
+        print("RFID scanner is ready....")
+        print("Press Control + c to quit.")
+        for event in device.read_loop():
+            # enter into an endeless read-loop
+            if event.type == ecodes.EV_KEY and event.value == 1:
+                digit = evdev.ecodes.KEY[event.code]
+                if digit == 'KEY_ENTER':
+                    # create and dump the tag
+                    tag = "".join(i.strip('KEY_') for i in container)
+                    print('tag', tag)
+                    if (len(tag) >= 10): 
+                        try:
+                            requests.get('http://localhost:5000/check' + '?tag=' + tag)
+                        except Exception:
+                            print ('RFID unable to connect to the local server')
+                    container = []
+                else:
+                    container.append(digit)
 
 Device.run()

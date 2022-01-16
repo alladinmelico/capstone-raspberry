@@ -1,25 +1,28 @@
 import requests
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_socketio import SocketIO
 from flask_socketio import send, emit
+import serial
 
 raspId = 'm2ShOB1OdMtwIhdPzciH12Oqf5sEVA7C'
-url = 'https://sscsystem.tech/api'
+#url = 'https://safe-and-smart-campus.herokuapp.com/api'
+url = "http://192.168.0.14/api"
 rfidUrl = url + '/rfid/'
+port = "/dev/ttyUSB0"
+ser = serial.Serial(port, baudrate=115200, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=0)
 
-def checkRfid():
-    id, text = reader.read()
-    greenLED.off()
+def sendReq(temp, tag):
     
     try:
-        getRfid = requests.get(rfidUrl + str(id) + '?id=' + raspId)
+        getRfid = requests.get(rfidUrl + str(tag) + '?id=' + raspId)
         print('rfid request', getRfid)
 
         if (getRfid.status_code == 404):
-            urlString = rfidUrl + '?id=' + raspId + '&value=' + str(id)
+            urlString = rfidUrl + '?id=' + raspId + '&value=' + str(tag)
             print ('url', urlString)
             postRfid = requests.post(urlString)
-            if (postRfid.status_code == 200 or postRfid.status_code == 201):
+            print ('postRfid', postRfid)
+            if (postRfid.status_code == 201):
                 print ('RFID added')
             else:
                 print ('body', postRfid.body)
@@ -37,13 +40,12 @@ def checkRfid():
         emit('new_data', 'from server', broadcast=True)
     except Exception:
         print ('Unable to connect')
+        return
     
-    postTemperature = requests.post(url + '/temperature' + '?id=' + raspId, data={'temperature': sensor.get_object_1(), 'user_id': id})
+    postTemperature = requests.post(url + '/temperature' + '?id=' + raspId, data={'temperature': temp, 'user_id': id})
     print ('temp status', postTemperature.status_code)
-    print ("Ambient Temperature :", sensor.get_ambient())
-    print ("Object Temperature :", sensor.get_object_1())
     
-    # return
+    return
 
 socketio = SocketIO(logger=True)
 
@@ -53,23 +55,37 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
 def some_function():
-    id, text = reader.read()
     emit('schedule_response', 'foo', broadcast=True)
     return
 
 @app.route('/')
-
 def index():
- return render_template('index.html')
+    return render_template('index.html')
 
 @app.route('/check')
 def check():
-    checkRfid()
+    #checkRfid()
+    tag = request.args.get('tag')
+    if (len(tag) >= 10):        
+        temperature = 0.0
+        while True:
+            data = ser.read(9999)
+
+            if len(data) > 1:
+                temperature = ((data[5] * 256) + data[4]) * 0.1
+                print (data)
+                print (temperature)
+                print ("---")
+                break
+        print ('tag', tag)
+        sendReq(temperature, tag)
+        return {"temp": str(temperature), "tag": str(tag)}
+    
+    return {"temp": 0, "tag": 0}
     
 @socketio.on('connect')
 def client_connect():
     print('connecteds')
-    id, text = reader.read()
     emit('schedule_response', 'foo', broadcast=True)
     return
 
