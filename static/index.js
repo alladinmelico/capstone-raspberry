@@ -7,7 +7,7 @@ $(document).ready(function () {
   setInterval(() => {
     fetch("/check")
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => console.log('data', data))
       .catch(error => {
         console.error('Error:', error);
       });
