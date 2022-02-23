@@ -38,20 +38,34 @@
     </div>
   </main>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
-  <script >
-      const profile = document.querySelector("#profile")
-      const schoolId = document.querySelector("#school-id")
-      const username = document.querySelector("#username")
-      const startTime = document.querySelector("#start-time")
-      const endTime = document.querySelector("#end-time")
-      setInterval(() => {
-        fetch("/check")
-          .then((response) => response.json())
-          .then((data) => console.log('data', data))
-          .catch(error => {
-            console.error('Error:', error);
-          });
-      }, 1000)
+  <script>
+      $(document).ready(function () {
+      const profile = $("#profile")
+      const schoolId = $("#school-id")
+      const username = $("#username")
+      const startTime = $("#start-time")
+      const endTime = $("#end-time")
+      const socket = io.connect('http://localhost:5000')
+      
+      socket.on('connect', function() {
+          console.log('connect...')
+          socket.emit('my event', {data: 'connected'})
+      })
+      
+      socket.on('after connect', function(msg) {
+          console.log('after connect', msg)
+      })
+      
+      socket.on('schedule_response', function(msg) {
+          data = JSON.parse(msg)
+          console.log(data)
+          profile.attr("src", data.photo);
+          schoolId.text(data.schoolId);
+          username.text(data.name);
+          startTime.text(data.start);
+          endTime.text(data.endTime);
+      })
+    })
   </script>
 </body>
 </html>

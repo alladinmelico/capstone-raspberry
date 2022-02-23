@@ -4,12 +4,18 @@ $(document).ready(function () {
   const username = document.querySelector("#username")
   const startTime = document.querySelector("#start-time")
   const endTime = document.querySelector("#end-time")
-  setInterval(() => {
-    fetch("/check")
-      .then((response) => response.json())
-      .then((data) => console.log('data', data))
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  }, 100)
+  const socket = io.connect('http://localhost:5000')
+  
+  socket.on('connect', function() {
+      console.log('connect...')
+      socket.emit('my event', {data: 'connected'})
+  })
+  
+  socket.on('after connect', function(msg) {
+      console.log('after connect', msg)
+  })
+  
+  socket.on('my response', function(msg) {
+      console.log('my response', msg)
+  })
 })
