@@ -66,7 +66,7 @@ def index():
 def check():
     #checkRfid()
     tag = request.args.get('tag')
-    if (tag && len(tag) >= 10):        
+    if (tag and len(tag) >= 10):        
         temperature = 0.0
         while True:
             data = ser.read(9999)
