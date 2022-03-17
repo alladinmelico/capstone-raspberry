@@ -8,6 +8,7 @@
 This system's scheduling method could substantially benefit the school's management in implementing safe face-to-face classes. The scheduling system will incorporate the protocols provided by the IATF. 
 
 #### 💻 **Instruction**
+- Install evdev using `sudo pip3 install evdev` 
 1. Run this command to start the server: `python3 server.py`
 2. On seperate terminal, run this command: `python3 device.py`
 

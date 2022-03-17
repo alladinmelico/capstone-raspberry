@@ -6,8 +6,8 @@ import serial
 import json 
 
 raspId = 'm2ShOB1OdMtwIhdPzciH12Oqf5sEVA7C'
-#url = 'https://safe-and-smart-campus.herokuapp.com/api'
-url = "http://192.168.0.14/api"
+url = 'https://phplaravel-745170-2505664.cloudwaysapps.com/api'
+#url = "http://192.168.0.14/api"
 rfidUrl = url + '/rfid/'
 port = "/dev/ttyUSB0"
 ser = serial.Serial(port, baudrate=115200, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, bytesize=serial.EIGHTBITS, timeout=0)

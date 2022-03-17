@@ -4,7 +4,7 @@ import requests
           
 def sendReq(temp, tag):
     raspId = 'm2ShOB1OdMtwIhdPzciH12Oqf5sEVA7C'
-    url = 'https://safe-and-smart-campus.herokuapp.com/api'
+    url = 'https://phplaravel-745170-2505664.cloudwaysapps.com/api'
     #url = "http://192.168.0.14/api"
     rfidUrl = url + '/rfid/' 
     
