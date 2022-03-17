@@ -8,7 +8,10 @@
 This system's scheduling method could substantially benefit the school's management in implementing safe face-to-face classes. The scheduling system will incorporate the protocols provided by the IATF. 
 
 #### 💻 **Instruction**
-- Install evdev using `sudo pip3 install evdev` 
+The raspberry endpoints are wrapped with a middleware that checks if the passed mac address has been registered. 
+1. Install evdev using `sudo pip3 install evdev` 
+2. Install pip `sudo apt install python-pip`
+3. Install mac library `sudo pip install get-mac`
 1. Run this command to start the server: `python3 server.py`
 2. On seperate terminal, run this command: `python3 device.py`
 

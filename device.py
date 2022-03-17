@@ -1,9 +1,11 @@
 import evdev
 from evdev import categorize, ecodes
 import requests
+from getmac import get_mac_address
+
+raspId = get_mac_address()
           
-def sendReq(temp, tag):
-    raspId = 'm2ShOB1OdMtwIhdPzciH12Oqf5sEVA7C'
+def sendReq(tag):
     url = 'https://phplaravel-745170-2505664.cloudwaysapps.com/api'
     #url = "http://192.168.0.14/api"
     rfidUrl = url + '/rfid/' 
@@ -18,17 +20,6 @@ def sendReq(temp, tag):
             print ('You do not have a schedule for today')
         elif (getRfid.status_code == 200):
             print ('Logged in')
-            try:
-                requests.get('http://localhost:5000/display?temp=' + str(temp),
-                             params=getRfid.json())
-            except Exception:
-                print ('[Error]: Sending data to server to display.')
-                
-            try:
-                postTemperature = requests.post(url + '/temperature' + '?id=' + raspId, data={'temperature': temp, 'user_id': getRfid.json()["id"]})
-                print ('temp status', postTemperature.status_code)
-            except Exception:
-                print ('[Error]: Sending temperature data to remote server.')
         elif (getRfid.status_code == 204):
             print ('Logged out')
         else:
@@ -76,12 +67,7 @@ class Device():
                     tag = "".join(i.strip('KEY_') for i in container)
                     print('tag', tag)
                     if (len(tag) >= 10):
-                        temperature = ""
-                        try:
-                            temperature = requests.get('http://localhost:5000/check' + '?tag=' + tag)
-                        except Exception:
-                            print ('RFID unable to connect to the local server')
-                        sendReq(temperature.json(), tag)
+                        sendReq(tag)
                         
                     container = []
                 else:
