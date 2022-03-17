@@ -3,7 +3,7 @@ from evdev import categorize, ecodes
 import requests
 from getmac import get_mac_address
 
-raspId = get_mac_address()
+raspId = get_mac_address().replace(':','')
           
 def sendReq(tag):
     url = 'https://phplaravel-745170-2505664.cloudwaysapps.com/api'
@@ -12,7 +12,6 @@ def sendReq(tag):
     
     try:
         getRfid = requests.get(rfidUrl + str(tag) + '/log?id=' + raspId)
-        print('rfid request', getRfid.json())
         
         if (getRfid.status_code == 404):
             print ("Your RFID card is now registered yet, contact the administrator")
