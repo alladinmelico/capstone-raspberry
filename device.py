@@ -14,7 +14,7 @@ def sendReq(tag):
         getRfid = requests.get(rfidUrl + str(tag) + '/log?id=' + raspId)
         
         if (getRfid.status_code == 404):
-            print ("Your RFID card is now registered yet, contact the administrator")
+            print ("Your RFID card is not registered yet, contact the administrator")
         elif (getRfid.status_code == 419):
             print ('You do not have a schedule for today')
         elif (getRfid.status_code == 200):
